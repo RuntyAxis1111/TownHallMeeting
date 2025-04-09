@@ -5,9 +5,32 @@ const path = require('path');
 const app = express();
 const port = 3000;
 
-// Middleware
+// --- Middleware ---
 app.use(express.json()); // Para parsear body JSON
-app.use(express.static(path.join(__dirname, 'public'))); // Servir archivos estáticos desde 'public'
+
+// --- Rutas API ---
+// IMPORTANT: Define API routes BEFORE static middleware
+app.post('/ask', (req, res) => {
+  const { question } = req.body;
+
+  if (!question || typeof question !== 'string' || question.trim() === '') {
+    return res.status(400).json({ success: false, message: 'La pregunta no puede estar vacía.' });
+  }
+
+  const sql = `INSERT INTO questions (question_text) VALUES (?)`;
+  db.run(sql, [question.trim()], function(err) { // Usar function() para acceder a 'this'
+    if (err) {
+      console.error("Error inserting data:", err.message);
+      return res.status(500).json({ success: false, message: 'Error al guardar la pregunta.' });
+    }
+    console.log(`A row has been inserted with rowid ${this.lastID}`);
+    res.status(201).json({ success: true, message: 'Pregunta enviada con éxito.', id: this.lastID });
+  });
+});
+
+// --- Servir archivos estáticos ---
+// Serve static files from 'public' directory AFTER API routes
+app.use(express.static(path.join(__dirname, 'public')));
 
 // --- Configuración Base de Datos SQLite ---
 const dbPath = path.resolve(__dirname, 'questions.db');
@@ -31,24 +54,6 @@ const db = new sqlite3.Database(dbPath, (err) => {
   }
 });
 
-// --- Rutas API ---
-app.post('/ask', (req, res) => {
-  const { question } = req.body;
-
-  if (!question || typeof question !== 'string' || question.trim() === '') {
-    return res.status(400).json({ success: false, message: 'La pregunta no puede estar vacía.' });
-  }
-
-  const sql = `INSERT INTO questions (question_text) VALUES (?)`;
-  db.run(sql, [question.trim()], function(err) { // Usar function() para acceder a 'this'
-    if (err) {
-      console.error("Error inserting data:", err.message);
-      return res.status(500).json({ success: false, message: 'Error al guardar la pregunta.' });
-    }
-    console.log(`A row has been inserted with rowid ${this.lastID}`);
-    res.status(201).json({ success: true, message: 'Pregunta enviada con éxito.', id: this.lastID });
-  });
-});
 
 // --- Ruta principal para servir el HTML ---
 // Express ya sirve index.html desde 'public' por defecto si existe.
@@ -59,6 +64,7 @@ app.post('/ask', (req, res) => {
 
 
 // --- Iniciar Servidor ---
+// Server start remains the same
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
