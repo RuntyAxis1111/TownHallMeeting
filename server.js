@@ -8,35 +8,14 @@ const port = 3000;
 // --- Middleware ---
 app.use(express.json()); // Para parsear body JSON
 
-// --- Rutas API ---
-// IMPORTANT: Define API routes BEFORE static middleware
-app.post('/ask', (req, res) => {
-  const { question } = req.body;
-
-  if (!question || typeof question !== 'string' || question.trim() === '') {
-    return res.status(400).json({ success: false, message: 'La pregunta no puede estar vacía.' });
-  }
-
-  const sql = `INSERT INTO questions (question_text) VALUES (?)`;
-  db.run(sql, [question.trim()], function(err) { // Usar function() para acceder a 'this'
-    if (err) {
-      console.error("Error inserting data:", err.message);
-      return res.status(500).json({ success: false, message: 'Error al guardar la pregunta.' });
-    }
-    console.log(`A row has been inserted with rowid ${this.lastID}`);
-    res.status(201).json({ success: true, message: 'Pregunta enviada con éxito.', id: this.lastID });
-  });
-});
-
-// --- Servir archivos estáticos ---
-// Serve static files from 'public' directory AFTER API routes
-app.use(express.static(path.join(__dirname, 'public')));
-
 // --- Configuración Base de Datos SQLite ---
+// Define DB setup early so 'db' is available for routes
 const dbPath = path.resolve(__dirname, 'questions.db');
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
     console.error("Error opening database:", err.message);
+    // If DB fails to open, the app probably can't run, maybe exit?
+    // process.exit(1); // Or handle more gracefully
   } else {
     console.log("Connected to the SQLite database.");
     // Crear tabla si no existe
@@ -54,28 +33,50 @@ const db = new sqlite3.Database(dbPath, (err) => {
   }
 });
 
+// --- Rutas API ---
+// Endpoint to receive questions
+app.post('/ask', (req, res) => {
+  const { question } = req.body;
 
-// --- Ruta principal para servir el HTML ---
-// Express ya sirve index.html desde 'public' por defecto si existe.
-// Si quieres ser explícito o servir otro archivo:
+  if (!question || typeof question !== 'string' || question.trim() === '') {
+    return res.status(400).json({ success: false, message: 'La pregunta no puede estar vacía.' });
+  }
+
+  const sql = `INSERT INTO questions (question_text) VALUES (?)`;
+  // Use function() to access 'this.lastID'
+  db.run(sql, [question.trim()], function(err) {
+    if (err) {
+      console.error("Error inserting data:", err.message);
+      return res.status(500).json({ success: false, message: 'Error interno al guardar la pregunta.' });
+    }
+    console.log(`Question saved with ID: ${this.lastID}`);
+    // Return success response with the ID
+    res.status(201).json({ success: true, message: 'Pregunta enviada con éxito.', id: this.lastID });
+  });
+});
+
+// --- Servir archivos estáticos ---
+// Serve static files from 'public' directory AFTER API routes
+app.use(express.static(path.join(__dirname, 'public')));
+
+// --- Ruta principal (Opcional, Express sirve index.html por defecto) ---
 // app.get('/', (req, res) => {
 //   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 // });
 
-
 // --- Iniciar Servidor ---
-// Server start remains the same
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
 
-// Cerrar la conexión a la BD al terminar el proceso
+// --- Manejo de cierre de la BD ---
+// Gracefully close the database connection when the server stops
 process.on('SIGINT', () => {
   db.close((err) => {
     if (err) {
-      return console.error(err.message);
+      return console.error('Error closing database:', err.message);
     }
-    console.log('Closed the database connection.');
+    console.log('Database connection closed.');
     process.exit(0);
   });
 });
