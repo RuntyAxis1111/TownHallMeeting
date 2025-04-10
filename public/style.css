@@ -1,148 +1,65 @@
-/* Basic Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color-scheme: light; /* Force light mode */
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
-  line-height: 1.6;
-  background-color: #f4f7f6;
-  color: #333;
+  margin: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Stack header and main vertically */
+  place-items: center;
+  min-width: 320px;
   min-height: 100vh;
+  background-color: #f5f5f5; /* Light gray background */
 }
 
-/* Header Styling */
-.main-header {
-  background-color: #005f73; /* Dark teal */
-  color: #ffffff;
+header {
+  width: 100%;
+  background-color: #ffeb3b; /* Yellow background */
   padding: 1rem 0;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 2rem; /* Space below header */
 }
 
-.main-header h1 {
-  font-weight: 700;
-  font-size: 1.8rem;
+header h1 {
+  margin: 0;
+  font-size: 1.8em;
+  color: #333;
 }
 
-/* Main Content Area */
-.main-content {
-  flex-grow: 1; /* Allows main content to fill available space */
+#app {
+  max-width: 700px; /* Adjusted width for iframe */
+  width: 90%; /* Responsive width */
+  margin: 0 auto;
+  padding: 0 1rem; /* Add horizontal padding */
+  text-align: center;
+}
+
+.card {
+  background-color: #ffffff; /* White card */
+  padding: 2rem;
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Box shadow */
   display: flex;
-  justify-content: center;
-  align-items: center; /* Center the container vertically */
-  padding: 2rem 1rem; /* Add padding */
+  flex-direction: column;
+  gap: 1rem; /* Space between elements inside card */
 }
 
-.container {
-  background-color: #ffffff;
-  padding: 2.5rem;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.card h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.form-container {
   width: 100%;
-  max-width: 600px; /* Limit container width */
-  text-align: center;
+  /* Adjust height as needed or let iframe control it */
 }
 
-.container h2 {
-  color: #005f73; /* Dark teal */
-  margin-bottom: 1.5rem;
-  font-weight: 700;
-  font-size: 1.5rem;
-}
-
-/* Textarea Styling */
-#questionInput {
-  width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: 'Roboto', sans-serif;
-  font-size: 1rem;
-  resize: vertical; /* Allow vertical resize */
-  min-height: 100px; /* Minimum height */
-}
-
-#questionInput:focus {
-  outline: none;
-  border-color: #0077b6; /* Blue border on focus */
-  box-shadow: 0 0 0 2px rgba(0, 119, 182, 0.2);
-}
-
-/* Button Styling */
-#submitButton {
-  background-color: #0077b6; /* Blue */
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 700;
-  transition: background-color 0.3s ease, transform 0.1s ease;
-}
-
-#submitButton:hover {
-  background-color: #023e8a; /* Darker blue */
-}
-
-#submitButton:active {
-  transform: scale(0.98); /* Slight shrink on click */
-}
-
-#submitButton:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-
-/* Feedback Message Styling */
-.feedback {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  border-radius: 4px;
-  font-weight: bold;
-  min-height: 1.5em; /* Ensure space even when empty */
-  text-align: center;
-  opacity: 0; /* Hidden by default */
-  transition: opacity 0.5s ease-in-out;
-}
-
-.feedback.success {
-  background-color: #d4edda; /* Light green */
-  color: #155724; /* Dark green */
-  border: 1px solid #c3e6cb;
-  opacity: 1; /* Visible */
-}
-
-.feedback.error {
-  background-color: #f8d7da; /* Light red */
-  color: #721c24; /* Dark red */
-  border: 1px solid #f5c6cb;
-  opacity: 1; /* Visible */
-}
-
-/* Responsive Design */
-@media (max-width: 600px) {
-  .container {
-    padding: 1.5rem;
-  }
-
-  .main-header h1 {
-    font-size: 1.5rem;
-  }
-
-  .container h2 {
-    font-size: 1.3rem;
-  }
-
-  #submitButton {
-    padding: 0.7rem 1.2rem;
-    font-size: 0.9rem;
-  }
-}
+/* Removed styles for textarea, button, #responseMessage */
