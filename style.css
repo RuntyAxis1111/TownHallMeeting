@@ -35,7 +35,7 @@ header h1 {
 }
 
 #app {
-  max-width: 600px; /* Limit card width */
+  max-width: 700px; /* Adjusted width for iframe */
   width: 90%; /* Responsive width */
   margin: 0 auto;
   padding: 0 1rem; /* Add horizontal padding */
@@ -57,49 +57,9 @@ header h1 {
   color: #333;
 }
 
-textarea {
+.form-container {
   width: 100%;
-  padding: 0.8em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 1em;
-  box-sizing: border-box; /* Include padding and border in element's total width and height */
-  resize: vertical; /* Allow vertical resize only */
+  /* Adjust height as needed or let iframe control it */
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.8em 1.5em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #007bff; /* Blue button */
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.25s;
-}
-
-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-}
-
-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-#responseMessage {
-  margin-top: 1rem;
-  font-weight: 500;
-  min-height: 1.5em; /* Reserve space for the message */
-}
-
-#responseMessage.success {
-  color: #28a745; /* Green for success */
-}
-
-#responseMessage.error {
-  color: #dc3545; /* Red for error */
-}
+/* Removed styles for textarea, button, #responseMessage */
