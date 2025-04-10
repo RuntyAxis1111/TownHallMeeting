@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const submitButton = document.getElementById('submitButton');
   const feedbackMessage = document.getElementById('feedbackMessage');
   // --- Google Apps Script URL ---
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycby0meKp6AB47gD0eEP7OdtLq3-mVikHM4QkxTyjhizM4_zvQRhVSlorCSkh7wsVcHrr/exec';
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyrw8BHLKcA6bHx1nFSyx2RUFZng-u6rZbCD6mv0nRKWSCUepRXtUms0U0ygoFrOXk/exec';
 
   submitButton.addEventListener('click', async () => {
     const question = questionInput.value.trim();
