@@ -1,65 +1,517 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.6;
+  /* Use Montserrat as the primary font */
+  font-family: 'Montserrat', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
   font-weight: 400;
-  color-scheme: light; /* Force light mode */
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --sidebar-width-desktop: 250px; /* Fixed width for desktop sidebar */
+  --header-height: 64px; /* Fixed header height */
+  --gap: 15px; /* Gap between elements */
+
+  /* Colors */
+  --main-bg-color: #FFFFFF;
+  --sidebar-bg-color-start: #FFE866; /* Sidebar gradient start */
+  --sidebar-bg-color-end: #FFD700; /* Sidebar gradient end */
+  --sidebar-text-color: #000000; /* Black text on yellow */
+  --panel-bg-color: #FFFFFF;
+  --panel-border-color: #FFD700; /* Updated border color */
+  --header-bg-color: #FFD700; /* Updated header color */
+  --header-text-color: #000000;
+  --active-item-bg-color: #CCAD00; /* Active item background */
+  --active-item-text-color: #FFFFFF; /* Active item text color */
+  --gauge-track-color: #EFEFEF; /* Gauge track color */
+  --gauge-progress-color: #FFD700; /* Gauge progress color */
+
+  /* Animation and Transition */
+  --animation-duration: 1.5s; /* Slightly slower for smoother glow */
+  --transition-duration: 0.3s; /* Duration for selection transition and sidebar toggle */
+
+  /* Panel Height */
+  --panel-height-desktop: 75vh;
+  --panel-height-mobile: 50vh;
+  --panel-border-width: 2px;
+
+  /* Card Specific Styles */
+  --card-background: #FFFFFF;
+  --card-border-radius: 16px;
+  --card-box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  --card-padding-desktop: 24px;
+  --card-padding-mobile: 16px;
+  --card-title-color: #FFD700; /* Keep variable, override below */
+  --card-title-font-size: 18px;
+}
+
+/* Define the pulsating glow animation */
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 4px 0px var(--panel-border-color);
+  }
+  50% {
+    box-shadow: 0 0 10px 3px var(--panel-border-color);
+  }
+  100% {
+    box-shadow: 0 0 4px 0px var(--panel-border-color);
+  }
 }
 
 body {
   margin: 0;
-  display: flex;
-  flex-direction: column; /* Stack header and main vertically */
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: #f5f5f5; /* Light gray background */
+  padding: 0; /* Remove default body padding */
+  background-color: var(--main-bg-color);
+  color: #FFFFFF; /* Default text color white */
+  /* Body does not need display: flex/grid for this layout */
 }
 
-header {
+/* Header Styles */
+.main-header {
+  position: fixed; /* Fixed header */
+  top: 0;
+  left: 0;
   width: 100%;
-  background-color: #ffeb3b; /* Yellow background */
-  padding: 1rem 0;
+  height: var(--header-height); /* Keep original height */
+  background-color: var(--header-bg-color); /* Keep original color */
+  color: #FFFFFF; /* Header text color white */
+  padding: 0; /* Remove padding, handled by inner elements */
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-bottom: 2rem; /* Space below header */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column; /* Stack title and nav vertically */
+  align-items: center; /* Center content horizontally */
+  justify-content: center; /* Center content vertically */
+  z-index: 1000; /* Ensure header is on top */
+  box-shadow: 0 2px 4px rgba(0,0,0,.15); /* Keep original shadow */
 }
 
-header h1 {
+.header-title {
+  flex-grow: 1; /* Allow title area to take available space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0 var(--gap); /* Add horizontal padding back */
+  box-sizing: border-box;
+}
+
+.main-header h1 {
   margin: 0;
+  font-size: 1.5em;
+  font-weight: 700;
+  color: #FFFFFF; /* Header title color white */
+}
+
+/* Hamburger Icon (initially hidden on desktop) */
+.hamburger-icon {
+  display: none; /* Hidden by default */
   font-size: 1.8em;
-  color: #333;
+  cursor: pointer;
+  margin-right: var(--gap);
+  z-index: 1001; /* Ensure icon is above header content */
+  color: #FFFFFF; /* Hamburger icon color white */
+  position: absolute; /* Position absolutely within header */
+  left: var(--gap); /* Position from the left */
+  top: 50%; /* Vertically center */
+  transform: translateY(-50%); /* Adjust for vertical centering */
 }
 
-#app {
-  max-width: 700px; /* Adjusted width for iframe */
-  width: 90%; /* Responsive width */
-  margin: 0 auto;
-  padding: 0 1rem; /* Add horizontal padding */
+
+/* Header Navigation Band */
+.main-nav {
+  display: flex;
+  width: 100%; /* Full width band */
+  height: 32px; /* Adjust height as needed */
+  /* Removed max-width, centering, and gap from here */
+}
+
+.nav-button {
+  flex-grow: 1; /* Allow buttons to fill the width */
+  flex-basis: 0; /* Allow buttons to shrink equally */
+  background-color: rgba(255, 255, 255, 0.12); /* Semi-transparent white 12% */
+  color: #FFFFFF; /* Text white */
+  border: none; /* Remove border */
+  padding: 0; /* Remove padding, handled by shape */
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background-color var(--transition-duration) ease,
+              color var(--transition-duration) ease;
+  display: flex; /* Use flex to center text */
+  align-items: center;
+  justify-content: center;
+  position: relative; /* Needed for pseudo-elements or clip-path */
+  overflow: hidden; /* Hide overflow from shapes */
+  /* Removed border-radius */
+
+  /* Apply the same parallelogram shape to all buttons */
+  clip-path: polygon(0 0, 100% 0, calc(100% - 15px) 100%, 0 100%); /* Adjust 15px for slant */
+}
+
+/* Adjust margins for overlap */
+.main-nav .nav-button:nth-child(1) {
+  margin-right: -15px; /* Overlap with the next button */
+}
+
+.main-nav .nav-button:nth-child(2) {
+  z-index: 1; /* Ensure it's above the overlaps */
+  margin-right: -15px; /* Overlap with the next button */
+}
+
+.main-nav .nav-button:nth-child(3) {
+  /* No margin-left needed as it's the last button */
+}
+
+
+.nav-button:hover {
+  background-color: rgba(255, 255, 255, 0.25); /* Semi-transparent white 25% on hover */
+}
+
+.nav-button.active {
+  background-color: #FFFFFF; /* Active background white */
+  color: #333333; /* Active text charcoal */
+  /* Removed border-color */
+}
+
+/* Container for main content area (sidebar + panels) */
+.container {
+  /* No flex/grid needed here anymore, managed by fixed positioning and margins */
+  padding-top: var(--header-height); /* Add padding to prevent content from being hidden by fixed header */
+  display: flex; /* Use flex to manage sidebar and main content */
+  height: calc(100vh - var(--header-height)); /* Fill remaining vertical space */
+  overflow: hidden; /* Prevent container scroll, children will scroll */
+}
+
+/* Content Sections */
+.content-section {
+  display: none; /* Hidden by default */
+  /* Position below header */
+  padding-top: var(--header-height);
+  height: calc(100vh - var(--header-height));
+  overflow: hidden; /* Prevent section scroll, container will scroll */
+}
+
+.content-section.active {
+  display: block; /* Show active section */
+}
+
+/* Adjust the container within sections */
+.content-section .container {
+    padding-top: 0; /* Remove extra padding inside sections */
+    height: 100%; /* Fill the section height */
+}
+
+
+/* Left Section: Artist List (Sidebar) */
+.artist-list-section {
+  position: fixed; /* Fixed sidebar */
+  top: var(--header-height); /* Position below header */
+  left: 0;
+  width: var(--sidebar-width-desktop);
+  height: calc(100vh - var(--header-height)); /* Fill remaining vertical space */
+  background: linear-gradient(to bottom, var(--sidebar-bg-color-start), var(--sidebar-bg-color-end)); /* Gradient background */
+  color: #FFFFFF; /* Sidebar text color white */
+  padding: var(--gap);
+  box-sizing: border-box;
+  overflow-y: auto; /* Enable vertical scrolling for the sidebar content */
+  z-index: 999; /* Ensure sidebar is below header but above main content */
+  transition: transform var(--transition-duration) ease; /* Add transition for collapsing */
+  transform: translateX(0); /* Default state: visible */
+}
+
+/* Collapsed state for sidebar */
+.artist-list-section.collapsed {
+  transform: translateX(-100%);
+}
+
+/* Sidebar Title Block */
+.sidebar-title {
+  background: linear-gradient(to bottom, var(--sidebar-bg-color-start), var(--sidebar-bg-color-end)); /* Same gradient as sidebar */
+  border-radius: 8px;
+  padding: 8px 16px;
   text-align: center;
+  margin-bottom: var(--gap); /* Space below the title block */
+  position: sticky; /* Keep title visible */
+  top: -1px; /* Adjust slightly if needed */
+  z-index: 1; /* Ensure it's above list items */
 }
 
-.card {
-  background-color: #ffffff; /* White card */
-  padding: 2rem;
-  border-radius: 8px; /* Rounded corners */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Box shadow */
+.sidebar-title h2 {
+  margin: 0; /* Remove default h2 margin */
+  color: #FFFFFF; /* Sidebar title color white */
+  font-size: 1.5em; /* Adjust size as needed */
+  font-weight: 700;
+  border-bottom: none; /* Remove border from h2 */
+  padding-bottom: 0; /* Remove padding from h2 */
+}
+
+
+#artists-list, #palf-list, #truvatos-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#artists-list li, #palf-list li, #truvatos-list li {
+  padding: 0.75em 0.5em;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 0.25em;
+  color: #FFFFFF; /* Artist list item text color white */
+  background-color: transparent;
+  /* Add transition for background, color, and transform */
+  transition: background-color var(--transition-duration) ease,
+              color var(--transition-duration) ease,
+              transform var(--transition-duration) ease;
+  font-size: 14px; /* Item font size */
+  font-weight: bold; /* Item font weight */
+  text-transform: uppercase; /* Item text transform */
+}
+
+#artists-list li:hover, #palf-list li:hover, #truvatos-list li:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Slight white highlight on hover */
+}
+
+#artists-list li.active, #palf-list li.active, #truvatos-list li.active {
+  background-color: var(--active-item-bg-color); /* Active background #CCAD00 */
+  color: var(--active-item-text-color); /* Active text color #FFFFFF */
+  font-weight: bold;
+  /* Subtle slide/press down effect for the list item */
+  transform: translateY(2px);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2); /* Optional: add shadow for depth */
+}
+
+/* Right Section: Panels (Main Content Area) */
+.panels-section {
+  flex-grow: 1; /* Allow main section to take remaining space */
+  margin-left: var(--sidebar-width-desktop); /* Push content right by sidebar width */
+  padding: var(--gap); /* Add padding */
+  overflow-y: auto; /* Enable vertical scrolling for the main content */
+  box-sizing: border-box;
+  /* Removed fixed height/max-height */
+  transition: margin-left var(--transition-duration) ease; /* Add transition for sidebar toggle */
+}
+
+/* Adjust main content margin when sidebar is collapsed */
+.panels-section.sidebar-collapsed {
+  margin-left: 0;
+}
+
+
+/* 12-column Grid Container */
+.grid-container {
+  max-width: 1400px; /* Max width */
+  margin: 0 auto; /* Center the grid */
+  display: grid;
+  grid-template-columns: repeat(12, 1fr); /* 12 equal columns */
+  gap: var(--gap); /* Gap between grid items */
+  /* Add padding if needed, or rely on panels-section padding */
+}
+
+/* Panels within the grid (now acting as cards) */
+.panel {
+  /* Panels will span columns as needed, defined by their content or specific classes */
+  grid-column: span 12; /* Default: span all 12 columns */
+
+  background-color: var(--card-background); /* Card background */
+  border-radius: var(--card-border-radius); /* Card border radius */
+  box-shadow: var(--card-box-shadow); /* Card box shadow */
+  padding: var(--card-padding-desktop); /* Desktop padding */
+  overflow: hidden; /* Clip content like iframe */
+  display: flex;
+  flex-direction: column; /* Stack title and iframe vertically */
+  /* Removed border and animation from panel itself */
+  /* animation: pulseGlow var(--animation-duration) ease-in-out infinite; */
+  /* Removed fixed height/min-height from panel */
+  width: 100%; /* Take full width of its grid column(s) */
+  margin-bottom: 0; /* Remove margin-bottom, use grid gap instead */
+  box-sizing: border-box;
+  transform: none;
+  position: relative;
+  /* Add transition for box-shadow */
+  transition: box-shadow var(--transition-duration) ease;
+}
+
+/* Style for the h2 title inside the panel/card */
+.panel h2 {
+  font-size: var(--card-title-font-size); /* Title font size */
+  color: #333333; /* Card title color charcoal */
+  margin-top: 0; /* Remove top margin */
+  margin-bottom: var(--gap); /* Add space below title */
+}
+
+
+.panel iframe {
+  width: 100%; /* Iframe fills the panel width */
+  aspect-ratio: 16 / 9; /* Maintain 16:9 aspect ratio */
+  max-height: 600px; /* Maximum height for the iframe */
+  border: none; /* Ensure no iframe border */
+  display: block;
+}
+
+/* --- Gauge Styles --- */
+.gauge {
+  width: 140px;
+  height: 140px;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 1rem; /* Space between elements inside card */
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif; /* Use a simple font for numbers/labels */
 }
 
-.card h2 {
-  margin-top: 0;
-  color: #333;
-}
-
-.form-container {
+.gauge-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  /* Adjust height as needed or let iframe control it */
+  height: 100%;
+  transform: rotate(-90deg); /* Start from the top */
 }
 
-/* Removed styles for textarea, button, #responseMessage */
+.gauge-circle {
+  fill: none;
+  stroke-width: 10; /* Adjust stroke width as needed */
+  stroke-linecap: round;
+  transform-origin: 50% 50%;
+}
+
+.gauge-track {
+  stroke: var(--gauge-track-color);
+}
+
+.gauge-progress {
+  stroke: var(--gauge-progress-color);
+  transition: stroke-dashoffset 1s ease-in-out; /* Animation for progress */
+}
+
+.gauge-text {
+  position: relative; /* Position above SVG */
+  z-index: 1;
+  text-align: center;
+}
+
+.gauge-number {
+  font-size: 32px;
+  font-weight: bold;
+  color: #FFFFFF; /* Gauge number color white */
+}
+
+.gauge-label {
+  font-size: 12px;
+  color: #FFFFFF; /* Gauge label color white */
+  margin-top: 4px;
+}
+
+/* --- Micro-UX Styles --- */
+
+/* Scrollbar Styling (Webkit browsers) */
+.panels-section::-webkit-scrollbar {
+  width: 8px; /* Thin scrollbar */
+}
+
+.panels-section::-webkit-scrollbar-track {
+  background: transparent; /* Transparent track */
+}
+
+.panels-section::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.25); /* Semi-transparent black thumb */
+  border-radius: 4px; /* Rounded corners */
+}
+
+.panels-section::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.4); /* Darker thumb on hover */
+}
+
+/* Dark Mode Adjustment */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Adjust yellow colors by reducing brightness */
+    --sidebar-bg-color-start: #FFE866; /* Keep original for filter */
+    --sidebar-bg-color-end: #FFD700; /* Keep original for filter */
+    --panel-border-color: #FFD700; /* Keep original for filter */
+    --header-bg-color: #FFD700; /* Keep original for filter */
+    --active-item-bg-color: #CCAD00; /* Keep original for filter */
+    --gauge-progress-color: #FFD700; /* Keep original for filter */
+  }
+
+  /* Apply filter to elements using the yellow colors */
+  .artist-list-section,
+  .main-header,
+  .panel,
+  #artists-list li.active, #palf-list li.active, #truvatos-list li.active,
+  .gauge-progress,
+  .sidebar-title { /* Apply filter to the new sidebar title block */
+    filter: brightness(90%); /* Reduce brightness by 10% */
+  }
+
+  /* Adjust text colors for dark mode readability */
+  body {
+    color: #eee; /* Lighter default text */
+  }
+
+  .main-header h1,
+  .sidebar-title h2, /* Adjust sidebar title h2 color */
+  #artists-list li, #palf-list li, #truvatos-list li,
+  .gauge-number,
+  .gauge-label {
+     color: #eee; /* Lighter text for titles, list items, and gauge text */
+  }
+
+  .panel h2 {
+      color: #bbb; /* Slightly lighter charcoal for card titles in dark mode */
+  }
+
+
+  /* Adjust scrollbar for dark mode */
+  .panels-section::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.25); /* Semi-transparent white thumb */
+  }
+
+  .panels-section::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.4); /* Lighter thumb on hover */
+  }
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  /* Show hamburger icon */
+  .hamburger-icon {
+    display: block;
+  }
+
+  /* Sidebar */
+  .artist-list-section {
+    /* Sidebar is fixed and initially off-screen */
+    transform: translateX(-100%);
+  }
+
+  /* Show sidebar when active class is added by JS */
+  .artist-list-section.active {
+    transform: translateX(0);
+  }
+
+  /* Main content area */
+  .panels-section {
+    margin-left: 0; /* Remove margin when sidebar is hidden */
+    /* Panels will still span 12 columns within the grid-container */
+  }
+
+  /* Panel padding on mobile */
+  .panel {
+     padding: var(--card-padding-mobile); /* Mobile padding */
+     /* Removed panel height adjustment here, iframe aspect ratio handles height */
+  }
+}
+
+/* Optional: Adjust grid behavior on smaller screens if needed */
+/* @media (max-width: 600px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); // Example: auto-fit panels
+  }
+} */
